@@ -48,7 +48,9 @@ ${Pangolin_LIBRARIES}
 ${PROJECT_SOURCE_DIR}/../../../Thirdparty/DBoW2/lib/libDBoW2.so
 ${PROJECT_SOURCE_DIR}/../../../Thirdparty/g2o/lib/libg2o.so
 ${PROJECT_SOURCE_DIR}/../../../lib/libORB_SLAM2.so
+-lboost_system
 )
+##  above line from here: https://github.com/raulmur/ORB_SLAM2/issues/494#issuecomment-356753039
 
 # Node for monocular camera
 rosbuild_add_executable(Mono
@@ -76,4 +78,3 @@ src/ros_rgbd.cc
 target_link_libraries(RGBD
 ${LIBS}
 )
-
