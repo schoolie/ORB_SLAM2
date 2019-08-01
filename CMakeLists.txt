@@ -98,3 +98,7 @@ target_link_libraries(mono_kitti ${PROJECT_NAME})
 add_executable(mono_airsim
 Examples/Monocular/mono_airsim.cc)
 target_link_libraries(mono_airsim ${PROJECT_NAME})
+
+add_executable(mono_black_fly
+Examples/Monocular/mono_black_fly.cc)
+target_link_libraries(mono_black_fly ${PROJECT_NAME})
