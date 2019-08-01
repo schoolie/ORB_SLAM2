@@ -1,0 +1,15 @@
+# Ignore all
+*
+# Unignore all with extensions
+!*.*
+# Unignore all dirs
+!*/
+
+*/build
+build
+
+*/lib
+lib
+
+Thirdparty/g2o/config.h
+Vocabulary/ORBvoc.txt
