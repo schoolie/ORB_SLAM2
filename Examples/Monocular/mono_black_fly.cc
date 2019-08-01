@@ -24,6 +24,7 @@
 #include<fstream>
 #include<chrono>
 #include<iomanip>
+#include<cstdlib>
 
 #include<opencv2/core/core.hpp>
 
@@ -42,9 +43,9 @@ void LoadImages(const string &strSequence, vector<string> &vstrImageFilenames,
 
 int main(int argc, char **argv)
 {
-    if(argc != 4)
+    if(argc < 4)
     {
-        cerr << endl << "Usage: ./mono_black_fly path_to_vocabulary path_to_settings path_to_sequence" << endl;
+        cerr << endl << "Usage: ./mono_black_fly path_to_vocabulary path_to_settings path_to_sequence [n_start] [n_end]" << endl;
         return 1;
     }
 
@@ -53,7 +54,29 @@ int main(int argc, char **argv)
     vector<double> vTimestamps;
     LoadImages(string(argv[3]), vstrImageFilenames, vTimestamps);
 
+
     int nImages = vstrImageFilenames.size();
+
+    int nStart = 0;
+    int nEnd = nImages;
+    int nStep = 1;
+
+    if (argc >= 5) {
+      nStart = atoi(argv[4]);
+    }
+
+    if (argc == 6) {
+      nEnd = atoi(argv[5]);
+
+      if (nEnd > nImages) {
+        nEnd = nImages;
+      }
+    }
+
+    if (argc == 7) {
+      nStep = atoi(argv[6]);
+    }
+
 
     // Create SLAM system. It initializes all system threads and gets ready to process frames.
     ORB_SLAM2::System SLAM(argv[1],argv[2],ORB_SLAM2::System::MONOCULAR,true);
@@ -64,15 +87,20 @@ int main(int argc, char **argv)
 
     cout << endl << "-------" << endl;
     cout << "Start processing sequence ..." << endl;
-    cout << "Images in the sequence: " << nImages << endl << endl;
+    cout << "Images in the sequence: " << nImages << endl;
+    cout << "Start Image: " << nStart << endl;
+    cout << "End Image: " << nEnd << endl << endl;
+
 
     // Main loop
     cv::Mat im;
-    for(int ni=0; ni<nImages; ni++)
+    for(int ni=nStart; ni<nImages; ni+=nStep)
     {
         // Read image from file
         im = cv::imread(vstrImageFilenames[ni],CV_LOAD_IMAGE_UNCHANGED);
         double tframe = vTimestamps[ni];
+
+        cout << "Processing Image: " << ni << " ("<<vstrImageFilenames[ni] << ") @ time " << tframe << endl;
 
         if(im.empty())
         {
@@ -157,7 +185,7 @@ void LoadImages(const string &strPathToSequence, vector<string> &vstrImageFilena
         }
     }
 
-    string strPrefixLeft = strPathToSequence + "/images_slam/";
+    string strPrefixLeft = strPathToSequence + "/images_slam/frame_";
 
     const int nTimes = vTimestamps.size();
     vstrImageFilenames.resize(nTimes);
@@ -165,7 +193,7 @@ void LoadImages(const string &strPathToSequence, vector<string> &vstrImageFilena
     for(int i=0; i<nTimes; i++)
     {
         stringstream ss;
-        ss << setfill('0') << setw(6) << i;
-        vstrImageFilenames[i] = strPrefixLeft + ss.str() + ".png";
+        ss << setfill('0') << setw(5) << i;
+        vstrImageFilenames[i] = strPrefixLeft + ss.str() + ".jpg";
     }
 }
