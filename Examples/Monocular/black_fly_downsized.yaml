@@ -1,0 +1,63 @@
+%YAML:1.0
+
+#--------------------------------------------------------------------------------------------
+# Camera Parameters. Adjust them!
+#--------------------------------------------------------------------------------------------
+
+# CameraFOV = 90
+# fx=fy=f=imageWidth /(2 * tan(CameraFOV * π / 360))
+
+# Cu=image horizontal center = imageWidth/2
+# Cv=image vertical center = imageHight/2
+
+# Camera calibration and distortion parameters (OpenCV)
+Camera.fx: 2403.1011716772955
+Camera.fy: 2396.2445130704436
+Camera.cx: 622.8708215114005
+Camera.cy: 436.5831082703783
+
+Camera.k1: 0.035250912657391865
+Camera.k2: 0.20153763935541813
+Camera.p1: -0.009445008825089645
+Camera.p2: -0.005860645173022314
+Camera.k3: 1.121601822836618
+
+# Camera frames per second
+Camera.fps: 2.0
+
+# Color order of the images (0: BGR, 1: RGB. It is ignored if images are grayscale)
+Camera.RGB: 1
+
+#--------------------------------------------------------------------------------------------
+# ORB Parameters
+#--------------------------------------------------------------------------------------------
+
+# ORB Extractor: Number of features per image
+ORBextractor.nFeatures: 2000
+
+# ORB Extractor: Scale factor between levels in the scale pyramid
+ORBextractor.scaleFactor: 1.2
+
+# ORB Extractor: Number of levels in the scale pyramid
+ORBextractor.nLevels: 8
+
+# ORB Extractor: Fast threshold
+# Image is divided in a grid. At each cell FAST are extracted imposing a minimum response.
+# Firstly we impose iniThFAST. If no corners are detected we impose a lower value minThFAST
+# You can lower these values if your images have low contrast
+ORBextractor.iniThFAST: 20
+ORBextractor.minThFAST: 7
+
+#--------------------------------------------------------------------------------------------
+# Viewer Parameters
+#--------------------------------------------------------------------------------------------
+Viewer.KeyFrameSize: 0.1
+Viewer.KeyFrameLineWidth: 1
+Viewer.GraphLineWidth: 1
+Viewer.PointSize:2
+Viewer.CameraSize: 0.15
+Viewer.CameraLineWidth: 2
+Viewer.ViewpointX: 0
+Viewer.ViewpointY: -5
+Viewer.ViewpointZ: -10
+Viewer.ViewpointF: 500

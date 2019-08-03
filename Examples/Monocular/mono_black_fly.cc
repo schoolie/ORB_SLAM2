@@ -34,7 +34,7 @@
 //#include"../../include/Osmap.h"   /// for saving the map
 
 /// run with:
-// ./Examples/Monocular/mono_black_fly Vocabulary/ORBvoc.txt Examples/Monocular/black_fly.yaml /mnt/input/black_fly_data/
+// ./Examples/Monocular/mono_black_fly Vocabulary/ORBvoc.txt Examples/Monocular/black_fly.yaml /mnt/data/input/black_fly_data/
 
 using namespace std;
 
@@ -94,7 +94,7 @@ int main(int argc, char **argv)
 
     // Main loop
     cv::Mat im;
-    for(int ni=nStart; ni<nImages; ni+=nStep)
+    for(int ni=nStart; ni<nEnd; ni+=nStep)
     {
         // Read image from file
         im = cv::imread(vstrImageFilenames[ni],CV_LOAD_IMAGE_UNCHANGED);
