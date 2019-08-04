@@ -100,7 +100,10 @@ int main(int argc, char **argv)
         im = cv::imread(vstrImageFilenames[ni],CV_LOAD_IMAGE_UNCHANGED);
         double tframe = vTimestamps[ni];
 
-        cout << "Processing Image: " << ni << " ("<<vstrImageFilenames[ni] << ") @ time " << tframe << endl;
+        if (SLAM.mpTracker->mState != SLAM.mpTracker->mLastProcessedState) {
+          cout << "Processing Image: " << ni << " ("<<vstrImageFilenames[ni] << ") @ time " << tframe << endl;
+          cout << SLAM.mpTracker->mLastProcessedState << " --> " << SLAM.mpTracker->mState << endl;
+        }
 
         if(im.empty())
         {
