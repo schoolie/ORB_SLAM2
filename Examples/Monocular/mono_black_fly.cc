@@ -35,6 +35,7 @@
 
 /// run with:
 // ./Examples/Monocular/mono_black_fly Vocabulary/ORBvoc.txt Examples/Monocular/black_fly.yaml /mnt/data/input/black_fly_data/
+// ./Examples/Monocular/mono_black_fly Vocabulary/ORBvoc.txt Examples/Monocular/black_fly_downsized.yaml /mnt/data/input/black_fly_data_downsized/
 
 using namespace std;
 
@@ -142,10 +143,10 @@ int main(int argc, char **argv)
     }
 
     // save the map
-    //ORB_SLAM2::Osmap osmap = ORB_SLAM2::Osmap(SLAM);
-    //osmap.mapSave("airsim_map");	// "myFirstMap" or "myFirstMap.yaml", same thing
+    // ORB_SLAM2::Osmap osmap = ORB_SLAM2::Osmap(SLAM);
+    // osmap.mapSave("airsim_map");	// "myFirstMap" or "myFirstMap.yaml", same thing
     // save the pointcloud
-    //SLAM.CreatePCD("pointcloud.pcd");
+    // SLAM.CreatePCD("pointcloud.pcd");
 
     // Stop all threads
     SLAM.Shutdown();
