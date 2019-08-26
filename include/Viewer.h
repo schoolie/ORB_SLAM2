@@ -69,7 +69,7 @@ private:
     double mT;
     float mImageWidth, mImageHeight;
 
-    float mViewpointX, mViewpointY, mViewpointZ, mViewpointF;
+    float mViewpointX, mViewpointY, mViewpointZ, mViewpointF, mOutputImageReductionFactor;
 
     bool CheckFinish();
     void SetFinish();
@@ -87,5 +87,3 @@ private:
 
 
 #endif // VIEWER_H
-	
-

@@ -29,10 +29,14 @@
 namespace ORB_SLAM2
 {
 
-FrameDrawer::FrameDrawer(Map* pMap):mpMap(pMap)
+FrameDrawer::FrameDrawer(Map* pMap, const string &strSettingPath):mpMap(pMap)
 {
     mState=Tracking::SYSTEM_NOT_READY;
     mIm = cv::Mat(480,640,CV_8UC3, cv::Scalar(0,0,0));
+
+    cv::FileStorage fSettings(strSettingPath, cv::FileStorage::READ);
+    mOutputImageReductionFactor = fSettings["Viewer.OutputImageReductionFactor"];
+
 }
 
 cv::Mat FrameDrawer::DrawFrame()
@@ -74,6 +78,8 @@ cv::Mat FrameDrawer::DrawFrame()
     if(im.channels()<3) //this should be always true
         cvtColor(im,im,CV_GRAY2BGR);
 
+    float scl = mOutputImageReductionFactor;
+
     //Draw
     if(state==Tracking::NOT_INITIALIZED) //INITIALIZING
     {
@@ -82,15 +88,16 @@ cv::Mat FrameDrawer::DrawFrame()
             if(vMatches[i]>=0)
             {
                 cv::line(im,vIniKeys[i].pt,vCurrentKeys[vMatches[i]].pt,
-                        cv::Scalar(0,255,0));
+                        cv::Scalar(0,255,0), scl);
             }
         }
     }
     else if(state==Tracking::OK) //TRACKING
     {
+
         mnTracked=0;
         mnTrackedVO=0;
-        const float r = 5;
+        const float r = 5*scl;
         for(int i=0;i<N;i++)
         {
             if(vbVO[i] || vbMap[i])
@@ -105,13 +112,13 @@ cv::Mat FrameDrawer::DrawFrame()
                 if(vbMap[i])
                 {
                     cv::rectangle(im,pt1,pt2,cv::Scalar(0,255,0));
-                    cv::circle(im,vCurrentKeys[i].pt,2,cv::Scalar(0,255,0),-1);
+                    cv::circle(im,vCurrentKeys[i].pt,2*scl,cv::Scalar(0,255,0),-1);
                     mnTracked++;
                 }
                 else // This is match to a "visual odometry" MapPoint created in the last frame
                 {
                     cv::rectangle(im,pt1,pt2,cv::Scalar(255,0,0));
-                    cv::circle(im,vCurrentKeys[i].pt,2,cv::Scalar(255,0,0),-1);
+                    cv::circle(im,vCurrentKeys[i].pt,2*scl,cv::Scalar(255,0,0),-1);
                     mnTrackedVO++;
                 }
             }
@@ -154,7 +161,7 @@ void FrameDrawer::DrawTextInfo(cv::Mat &im, int nState, cv::Mat &imText)
     }
 
     int baseline=0;
-    float scl = 1.2;
+    float scl = mOutputImageReductionFactor;
     cv::Size textSize = cv::getTextSize(s.str(),cv::FONT_HERSHEY_PLAIN,scl,scl,&baseline);
 
     imText = cv::Mat(im.rows+textSize.height+10,im.cols,im.type());

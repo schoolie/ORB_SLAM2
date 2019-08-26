@@ -61,3 +61,4 @@ Viewer.ViewpointX: 0
 Viewer.ViewpointY: -5
 Viewer.ViewpointZ: -10
 Viewer.ViewpointF: 500
+Viewer.OutputImageReductionFactor: 2.4

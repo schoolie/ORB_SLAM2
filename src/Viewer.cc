@@ -49,6 +49,8 @@ Viewer::Viewer(System* pSystem, FrameDrawer *pFrameDrawer, MapDrawer *pMapDrawer
     mViewpointY = fSettings["Viewer.ViewpointY"];
     mViewpointZ = fSettings["Viewer.ViewpointZ"];
     mViewpointF = fSettings["Viewer.ViewpointF"];
+    mOutputImageReductionFactor = fSettings["Viewer.OutputImageReductionFactor"];
+
 }
 
 void Viewer::Run()
@@ -134,7 +136,8 @@ void Viewer::Run()
         pangolin::FinishFrame();
 
         cv::Mat im = mpFrameDrawer->DrawFrame();
-        cv::resize(im, im, cv::Size(), 0.8, 0.8); // reduce image size to fit in screen
+        float redFact = 1/mOutputImageReductionFactor;
+        cv::resize(im, im, cv::Size(), redFact, redFact); // reduce image size to fit in screen
         cv::imshow("ORB-SLAM2: Current Frame",im);
         cv::waitKey(mT);
 
