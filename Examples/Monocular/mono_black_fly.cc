@@ -34,9 +34,10 @@
 //#include"../../include/Osmap.h"   /// for saving the map
 
 /// run with:
-// ./Examples/Monocular/mono_black_fly Vocabulary/ORBvoc.txt Examples/Monocular/black_fly.yaml /mnt/data/input/black_fly_data/
+// ./Examples/Monocular/mono_black_fly Vocabulary/ORBvoc.txt Examples/Monocular/black_fly.yaml /mnt/data/input/black_fly_data_mirrored/
 // ./Examples/Monocular/mono_black_fly Vocabulary/ORBvoc.txt Examples/Monocular/black_fly_downsized.yaml /mnt/data/input/black_fly_data_downsized/
 
+using namespace cv;
 using namespace std;
 
 void LoadImages(const string &strSequence, vector<string> &vstrImageFilenames,
@@ -55,7 +56,11 @@ int main(int argc, char **argv)
     vector<double> vTimestamps;
     LoadImages(string(argv[3]), vstrImageFilenames, vTimestamps);
 
+    // Open pose file for writing
+    ofstream poseFile;
+    poseFile.open ("poses.txt");
 
+    int nTrackResets = 0;
     int nImages = vstrImageFilenames.size();
 
     int nStart = 0;
@@ -93,6 +98,8 @@ int main(int argc, char **argv)
     cout << "End Image: " << nEnd << endl << endl;
 
 
+    cv::Mat mTcw;
+
     // Main loop
     cv::Mat im;
     for(int ni=nStart; ni<nEnd; ni+=nStep)
@@ -104,6 +111,12 @@ int main(int argc, char **argv)
         if (SLAM.mpTracker->mState != SLAM.mpTracker->mLastProcessedState) {
           cout << "Processing Image: " << ni << " ("<<vstrImageFilenames[ni] << ") @ time " << tframe << endl;
           cout << SLAM.mpTracker->mLastProcessedState << " --> " << SLAM.mpTracker->mState << endl;
+
+          if (SLAM.mpTracker->mState == 3) {
+            SLAM.SaveKeyFrameTrajectoryTUM("KeyFrameTrajectory_" + std::to_string(nTrackResets) + ".txt");
+            SLAM.mpTracker->Reset();
+            nTrackResets ++;
+          }
         }
 
         if(im.empty())
@@ -118,8 +131,23 @@ int main(int argc, char **argv)
         std::chrono::monotonic_clock::time_point t1 = std::chrono::monotonic_clock::now();
 #endif
 
+
         // Pass the image to the SLAM system
-        SLAM.TrackMonocular(im,tframe);
+        cout << "tracking" << endl;
+        mTcw = SLAM.TrackMonocular(im,tframe);
+
+        cout << "writing" << endl;
+        // Write pose matrix
+        cout << tframe << ", ";
+        poseFile << tframe << ", ";
+        for (int i = 0; i < mTcw.rows; ++i) {
+          for (int j = 0; j < mTcw.cols; ++j) {
+              cout << mTcw.at<float>(i, j) << ", ";
+              poseFile << mTcw.at<float>(i, j) << ", ";
+          }
+        }
+        cout << endl;
+        poseFile << endl;
 
 #ifdef COMPILEDWITHC11
         std::chrono::steady_clock::time_point t2 = std::chrono::steady_clock::now();
@@ -165,7 +193,8 @@ int main(int argc, char **argv)
     cout << "mean tracking time: " << totaltime/nImages << endl;
 
     // Save camera trajectory
-    SLAM.SaveKeyFrameTrajectoryTUM("KeyFrameTrajectory.txt");
+    SLAM.SaveKeyFrameTrajectoryTUM("KeyFrameTrajectory_" + std::to_string(nTrackResets) + ".txt");
+    poseFile.close();
 
     return 0;
 }
