@@ -134,7 +134,7 @@ void Viewer::Run()
         pangolin::FinishFrame();
 
         cv::Mat im = mpFrameDrawer->DrawFrame();
-        cv::resize(im, im, cv::Size(), 0.4, 0.4); // reduce image size to fit in screen
+        cv::resize(im, im, cv::Size(), 0.8, 0.8); // reduce image size to fit in screen
         cv::imshow("ORB-SLAM2: Current Frame",im);
         cv::waitKey(mT);
 

@@ -154,7 +154,7 @@ void FrameDrawer::DrawTextInfo(cv::Mat &im, int nState, cv::Mat &imText)
     }
 
     int baseline=0;
-    int scl = 3;
+    float scl = 1.2;
     cv::Size textSize = cv::getTextSize(s.str(),cv::FONT_HERSHEY_PLAIN,scl,scl,&baseline);
 
     imText = cv::Mat(im.rows+textSize.height+10,im.cols,im.type());
