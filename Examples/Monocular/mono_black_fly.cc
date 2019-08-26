@@ -56,9 +56,7 @@ int main(int argc, char **argv)
     vector<double> vTimestamps;
     LoadImages(string(argv[3]), vstrImageFilenames, vTimestamps);
 
-    // Open pose file for writing
-    ofstream poseFile;
-    poseFile.open ("poses.txt");
+
 
     int nTrackResets = 0;
     int nImages = vstrImageFilenames.size();
@@ -114,6 +112,7 @@ int main(int argc, char **argv)
 
           if (SLAM.mpTracker->mState == 3) {
             SLAM.SaveKeyFrameTrajectoryTUM("KeyFrameTrajectory_" + std::to_string(nTrackResets) + ".txt");
+            SLAM.SaveTrajectoryTUM("CameraTrajectory_" + std::to_string(nTrackResets) + ".txt");
             SLAM.mpTracker->Reset();
             nTrackResets ++;
           }
@@ -133,21 +132,10 @@ int main(int argc, char **argv)
 
 
         // Pass the image to the SLAM system
-        cout << "tracking" << endl;
+
         mTcw = SLAM.TrackMonocular(im,tframe);
 
-        cout << "writing" << endl;
-        // Write pose matrix
-        cout << tframe << ", ";
-        poseFile << tframe << ", ";
-        for (int i = 0; i < mTcw.rows; ++i) {
-          for (int j = 0; j < mTcw.cols; ++j) {
-              cout << mTcw.at<float>(i, j) << ", ";
-              poseFile << mTcw.at<float>(i, j) << ", ";
-          }
-        }
-        cout << endl;
-        poseFile << endl;
+
 
 #ifdef COMPILEDWITHC11
         std::chrono::steady_clock::time_point t2 = std::chrono::steady_clock::now();
@@ -194,7 +182,7 @@ int main(int argc, char **argv)
 
     // Save camera trajectory
     SLAM.SaveKeyFrameTrajectoryTUM("KeyFrameTrajectory_" + std::to_string(nTrackResets) + ".txt");
-    poseFile.close();
+    SLAM.SaveTrajectoryTUM("CameraTrajectory_" + std::to_string(nTrackResets) + ".txt");
 
     return 0;
 }
