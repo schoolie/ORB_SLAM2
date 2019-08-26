@@ -916,7 +916,7 @@ bool Tracking::TrackWithMotionModel()
             else if(mCurrentFrame.mvpMapPoints[i]->Observations()>0)
                 nmatchesMap++;
         }
-    }    
+    }
 
     if(mbOnlyTracking)
     {
@@ -1516,7 +1516,7 @@ void Tracking::Reset()
 
     // Reset Loop Closing
     cout << "Reseting Loop Closing...";
-    // mpLoopClosing->RequestReset();
+    mpLoopClosing->RequestReset();
     cout << " done" << endl;
 
     // Clear BoW Database
