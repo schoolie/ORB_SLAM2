@@ -95,6 +95,7 @@ void Viewer::Run()
     bool bFollow = true;
     bool bLocalizationMode = false;
     bool bNoLoopClosing = false;
+    bool bNoHistoryMode = false;
 
     while(1)
     {
@@ -138,6 +139,17 @@ void Viewer::Run()
         {
             mpSystem->ActivateLoopClosure();
             bNoLoopClosing = false;
+        }
+
+        if(menuNoHistoryMode && !bNoHistoryMode)
+        {
+            mpSystem->ActivateNoHistoryMode();
+            bNoHistoryMode = true;
+        }
+        else if(!menuNoHistoryMode && bNoHistoryMode)
+        {
+            mpSystem->DeactivateNoHistoryMode();
+            bNoHistoryMode = false;
         }
 
         d_cam.Activate(s_cam);

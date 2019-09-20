@@ -72,6 +72,9 @@ public:
         return mlNewKeyFrames.size();
     }
 
+    void InformNoHistory(const bool &flag);
+
+
 protected:
 
     bool CheckNewKeyFrames();
@@ -105,6 +108,10 @@ protected:
     LoopClosing* mpLoopCloser;
     Tracking* mpTracker;
 
+    // Enable age based keyframe culling
+    bool mbNoHistory;
+
+    // Age limit that eliminates old frames
     double mStaleFrameLimit;
 
     std::list<KeyFrame*> mlNewKeyFrames;

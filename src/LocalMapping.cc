@@ -30,7 +30,7 @@ namespace ORB_SLAM2
 
 LocalMapping::LocalMapping(Map *pMap, const float bMonocular, const string &strSettingPath):
     mbMonocular(bMonocular), mbResetRequested(false), mbFinishRequested(false), mbFinished(true), mpMap(pMap),
-    mbAbortBA(false), mbStopped(false), mbStopRequested(false), mbNotStop(false), mbAcceptKeyFrames(true), mStaleFrameLimit(2.0)
+    mbAbortBA(false), mbStopped(false), mbStopRequested(false), mbNotStop(false), mbAcceptKeyFrames(true), mbNoHistory(true), mStaleFrameLimit(2.0)
 {
     cv::FileStorage fSettings(strSettingPath, cv::FileStorage::READ);
     mStaleFrameLimit = fSettings["Mapper.StaleFrameLimit"];
@@ -87,7 +87,9 @@ void LocalMapping::Run()
                 KeyFrameCulling();
 
                 // Check for old KeyFrames in Global Map
-                StaleKeyFrameCulling();
+                if (mbNoHistory) {
+                    StaleKeyFrameCulling();
+                }
             }
 
             mpLoopCloser->InsertKeyFrame(mpCurrentKeyFrame);
@@ -648,9 +650,7 @@ void LocalMapping::KeyFrameCulling()
         KeyFrame* pKF = *vit;
         if(pKF->mnId==0)
             continue;
-
-        cout << "Culling - Check KF " << pKF->mnId << " Timestamp: " << pKF->mTimeStamp << endl;
-
+            
         const vector<MapPoint*> vpMapPoints = pKF->GetMapPointMatches();
 
         int nObs = 3;
@@ -794,5 +794,12 @@ bool LocalMapping::isFinished()
     unique_lock<mutex> lock(mMutexFinish);
     return mbFinished;
 }
+
+
+void LocalMapping::InformNoHistory(const bool &flag)
+{
+    mbNoHistory = flag;
+}
+
 
 } //namespace ORB_SLAM

@@ -32,7 +32,7 @@ namespace ORB_SLAM2
 System::System(const string &strVocFile, const string &strSettingsFile, const eSensor sensor,
                const bool bUseViewer):mSensor(sensor),mbReset(false),mbActivateLocalizationMode(false),
         mbDeactivateLocalizationMode(false),mbActivateLoopClosure(false),
-        mbDeactivateLoopClosure(false)
+        mbDeactivateLoopClosure(false), mbActivateNoHistoryMode(false), mbDeactivateNoHistoryMode(false)
 {
     // Output welcome message
     cout << endl <<
@@ -257,6 +257,22 @@ cv::Mat System::TrackMonocular(const cv::Mat &im, const double &timestamp)
         }
     }
 
+
+    // Check No History mode change
+    {
+        unique_lock<mutex> lock(mMutexMode);
+        if(mbActivateNoHistoryMode)
+        {
+            mpLocalMapper->InformNoHistory(true);
+            mbActivateNoHistoryMode = false;
+        }
+        if(mbDeactivateNoHistoryMode)
+        {
+            mpLocalMapper->InformNoHistory(false);
+            mbDeactivateNoHistoryMode = false;
+        }
+    }
+
     // Check reset
     {
     unique_lock<mutex> lock(mMutexReset);
@@ -292,6 +308,18 @@ void System::DeactivateLoopClosure()
 {
     unique_lock<mutex> lock(mMutexMode);
     mbDeactivateLoopClosure = true;
+}
+
+void System::ActivateNoHistoryMode()
+{
+    unique_lock<mutex> lock(mMutexMode);
+    mbActivateNoHistoryMode = true;
+}
+
+void System::DeactivateNoHistoryMode()
+{
+    unique_lock<mutex> lock(mMutexMode);
+    mbDeactivateNoHistoryMode = true;
 }
 
 

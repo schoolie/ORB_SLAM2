@@ -83,12 +83,15 @@ public:
     // This resumes local mapping thread and performs SLAM again.
     void DeactivateLocalizationMode();
 
-
     // This resumes loop closure thread.
     void ActivateLoopClosure();
     // This stops loop closure thread.
     void DeactivateLoopClosure();
 
+    // This enables age based culling of keyframes / mappoints
+    void ActivateNoHistoryMode();
+    // This disables age based culling
+    void DeactivateNoHistoryMode();
 
     // Reset the system (clear map)
     void Reset();
@@ -171,6 +174,9 @@ private:
 
     bool mbActivateLoopClosure;
     bool mbDeactivateLoopClosure;
+    
+    bool mbActivateNoHistoryMode;
+    bool mbDeactivateNoHistoryMode;
 };
 
 }// namespace ORB_SLAM
