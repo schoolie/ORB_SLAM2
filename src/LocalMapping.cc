@@ -28,10 +28,13 @@
 namespace ORB_SLAM2
 {
 
-LocalMapping::LocalMapping(Map *pMap, const float bMonocular):
+LocalMapping::LocalMapping(Map *pMap, const float bMonocular, const string &strSettingPath):
     mbMonocular(bMonocular), mbResetRequested(false), mbFinishRequested(false), mbFinished(true), mpMap(pMap),
-    mbAbortBA(false), mbStopped(false), mbStopRequested(false), mbNotStop(false), mbAcceptKeyFrames(true)
+    mbAbortBA(false), mbStopped(false), mbStopRequested(false), mbNotStop(false), mbAcceptKeyFrames(true), mStaleFrameLimit(2.0)
 {
+    cv::FileStorage fSettings(strSettingPath, cv::FileStorage::READ);
+    mStaleFrameLimit = fSettings["Mapper.StaleFrameLimit"];
+
 }
 
 void LocalMapping::SetLoopCloser(LoopClosing* pLoopCloser)
@@ -82,6 +85,9 @@ void LocalMapping::Run()
 
                 // Check redundant local Keyframes
                 KeyFrameCulling();
+
+                // Check for old KeyFrames in Global Map
+                StaleKeyFrameCulling();
             }
 
             mpLoopCloser->InsertKeyFrame(mpCurrentKeyFrame);
@@ -642,6 +648,9 @@ void LocalMapping::KeyFrameCulling()
         KeyFrame* pKF = *vit;
         if(pKF->mnId==0)
             continue;
+
+        cout << "Culling - Check KF " << pKF->mnId << " Timestamp: " << pKF->mTimeStamp << endl;
+
         const vector<MapPoint*> vpMapPoints = pKF->GetMapPointMatches();
 
         int nObs = 3;
@@ -694,6 +703,35 @@ void LocalMapping::KeyFrameCulling()
             pKF->SetBadFlag();
     }
 }
+
+
+void LocalMapping::StaleKeyFrameCulling()
+{
+    // Check redundant keyframes (only local keyframes)
+    // A keyframe is considered redundant if the 90% of the MapPoints it sees, are seen
+    // in at least other 3 keyframes (in the same or finer scale)
+    // We only consider close stereo points
+    vector<KeyFrame*> vpAllKeyFrames = mpMap->GetAllKeyFrames();
+
+    for(vector<KeyFrame*>::iterator vit=vpAllKeyFrames.begin(), vend=vpAllKeyFrames.end(); vit!=vend; vit++)
+    {
+        KeyFrame* pKF = *vit;
+        if(pKF->mnId==0)
+            continue;
+
+        double age = mpTracker->mLatestTimeStamp - pKF->mTimeStamp;
+
+        cout << "Stale Culling - Check KF " << pKF->mnId << " Timestamp: " << pKF->mTimeStamp << " Age: " << age;
+
+        if(age > mStaleFrameLimit) {
+            pKF->SetBadFlag();
+            cout << " - Culled";
+        }
+        cout << endl;
+
+    }
+}
+
 
 cv::Mat LocalMapping::SkewSymmetricMatrix(const cv::Mat &v)
 {

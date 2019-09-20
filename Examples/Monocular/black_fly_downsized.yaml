@@ -61,3 +61,5 @@ Viewer.ViewpointY: -5
 Viewer.ViewpointZ: -10
 Viewer.ViewpointF: 500
 Viewer.OutputImageReductionFactor: 1.2
+
+Mapper.StaleFrameLimit: 1.0

@@ -40,7 +40,7 @@ class Map;
 class LocalMapping
 {
 public:
-    LocalMapping(Map* pMap, const float bMonocular);
+    LocalMapping(Map* pMap, const float bMonocular, const string &strSettingPath);
 
     void SetLoopCloser(LoopClosing* pLoopCloser);
 
@@ -82,6 +82,7 @@ protected:
     void SearchInNeighbors();
 
     void KeyFrameCulling();
+    void StaleKeyFrameCulling();
 
     cv::Mat ComputeF12(KeyFrame* &pKF1, KeyFrame* &pKF2);
 
@@ -103,6 +104,8 @@ protected:
 
     LoopClosing* mpLoopCloser;
     Tracking* mpTracker;
+
+    double mStaleFrameLimit;
 
     std::list<KeyFrame*> mlNewKeyFrames;
 
