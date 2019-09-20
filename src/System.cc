@@ -235,6 +235,28 @@ cv::Mat System::TrackMonocular(const cv::Mat &im, const double &timestamp)
         }
     }
 
+    // Check mode change
+    {
+        unique_lock<mutex> lock(mMutexMode);
+        if(mbDeactivateLoopClosure)
+        {
+            mpLoopCloser->RequestStop();
+
+            // Wait until Local Mapping has effectively stopped
+            while(!mpLoopCloser->isStopped())
+            {
+                usleep(1000);
+            }
+
+            mbDeactivateLoopClosure = false;
+        }
+        if(mbActivateLoopClosure)
+        {
+            mpLoopCloser->Release();
+            mbActivateLoopClosure = false;
+        }
+    }
+
     // Check reset
     {
     unique_lock<mutex> lock(mMutexReset);

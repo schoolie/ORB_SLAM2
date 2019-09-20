@@ -62,7 +62,14 @@ public:
 
     void InsertKeyFrame(KeyFrame *pKF);
 
+    // Thread Synch
+    void RequestStop();
     void RequestReset();
+    bool Stop();
+    void Release();
+    bool isStopped();
+    bool stopRequested();
+    bool SetNotStop(bool flag);
 
     // This function will run in a separate thread
     void RunGlobalBundleAdjustment(unsigned long nLoopKF);
@@ -136,6 +143,12 @@ protected:
     bool mbStopGBA;
     std::mutex mMutexGBA;
     std::thread* mpThreadGBA;
+
+
+    bool mbStopped;
+    bool mbStopRequested;
+    bool mbNotStop;
+    std::mutex mMutexStop;
 
     // Fix scale in the stereo/RGB-D case
     bool mbFixScale;

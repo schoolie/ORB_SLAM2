@@ -37,6 +37,7 @@ namespace ORB_SLAM2
 
 LoopClosing::LoopClosing(Map *pMap, KeyFrameDatabase *pDB, ORBVocabulary *pVoc, const bool bFixScale):
     mbResetRequested(false), mbFinishRequested(false), mbFinished(true), mpMap(pMap),
+    mbStopped(false), mbStopRequested(false), 
     mpKeyFrameDB(pDB), mpORBVocabulary(pVoc), mpMatchedKF(NULL), mLastLoopKFid(0), mbRunningGBA(false), mbFinishedGBA(true),
     mbStopGBA(false), mpThreadGBA(NULL), mbFixScale(bFixScale), mnFullBAIdx(0)
 {
@@ -61,8 +62,10 @@ void LoopClosing::Run()
     while(1)
     {
         // Check if there are keyframes in the queue
-        if(CheckNewKeyFrames())
+        if(CheckNewKeyFrames() && !Stop())
         {
+            cout << "Loop Closing New Keyframes " << mlpLoopKeyFrameQueue.size() << endl;
+
             // Detect loop candidates and check covisibility consistency
             if(DetectLoop())
             {
@@ -74,7 +77,17 @@ void LoopClosing::Run()
                    CorrectLoop();
                }
             }
-        }       
+        }              
+        else if(Stop())
+        {
+            // Safe area to stop
+            while(isStopped() && !CheckFinish())
+            {
+                usleep(3000);
+            }
+            if(CheckFinish())
+                break;
+        } 
 
         ResetIfRequested();
 
@@ -744,6 +757,65 @@ void LoopClosing::RunGlobalBundleAdjustment(unsigned long nLoopKF)
         mbFinishedGBA = true;
         mbRunningGBA = false;
     }
+}
+
+
+void LoopClosing::RequestStop()
+{
+    unique_lock<mutex> lock(mMutexStop);
+    mbStopRequested = true;
+    // mbAbortBA = true;
+}
+
+bool LoopClosing::Stop()
+{
+    unique_lock<mutex> lock(mMutexStop);
+    if(mbStopRequested && !mbNotStop)
+    {
+        mbStopped = true;
+        cout << "Loop Closure STOP" << endl;
+        return true;
+    }
+
+    return false;
+}
+
+bool LoopClosing::isStopped()
+{
+    unique_lock<mutex> lock(mMutexStop);
+    return mbStopped;
+}
+
+bool LoopClosing::stopRequested()
+{
+    unique_lock<mutex> lock(mMutexStop);
+    return mbStopRequested;
+}
+
+void LoopClosing::Release()
+{
+    unique_lock<mutex> lock(mMutexStop);
+    unique_lock<mutex> lock2(mMutexFinish);
+    if(mbFinished)
+        return;
+    mbStopped = false;
+    mbStopRequested = false;
+
+    cout << "Loop Closure RELEASE" << endl;
+}
+
+
+
+bool LoopClosing::SetNotStop(bool flag)
+{
+    unique_lock<mutex> lock(mMutexStop);
+
+    if(flag && mbStopped)
+        return false;
+
+    mbNotStop = flag;
+
+    return true;
 }
 
 void LoopClosing::RequestFinish()
