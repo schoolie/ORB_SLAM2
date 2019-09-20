@@ -31,7 +31,8 @@ namespace ORB_SLAM2
 
 System::System(const string &strVocFile, const string &strSettingsFile, const eSensor sensor,
                const bool bUseViewer):mSensor(sensor),mbReset(false),mbActivateLocalizationMode(false),
-        mbDeactivateLocalizationMode(false)
+        mbDeactivateLocalizationMode(false),mbActivateLoopClosure(false),
+        mbDeactivateLoopClosure(false)
 {
     // Output welcome message
     cout << endl <<
@@ -258,6 +259,19 @@ void System::DeactivateLocalizationMode()
     unique_lock<mutex> lock(mMutexMode);
     mbDeactivateLocalizationMode = true;
 }
+
+void System::ActivateLoopClosure()
+{
+    unique_lock<mutex> lock(mMutexMode);
+    mbActivateLoopClosure = true;
+}
+
+void System::DeactivateLoopClosure()
+{
+    unique_lock<mutex> lock(mMutexMode);
+    mbDeactivateLoopClosure = true;
+}
+
 
 void System::Reset()
 {

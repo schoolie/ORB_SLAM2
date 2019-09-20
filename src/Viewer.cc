@@ -72,6 +72,8 @@ void Viewer::Run()
     pangolin::Var<bool> menuShowKeyFrames("menu.Show KeyFrames",true,true);
     pangolin::Var<bool> menuShowGraph("menu.Show Graph",true,true);
     pangolin::Var<bool> menuLocalizationMode("menu.Localization Mode",false,true);
+    pangolin::Var<bool> menuNoLoopClosing("menu.Disable Loop Closing",false,true);
+    pangolin::Var<bool> menuNoHistoryMode("menu.No History Mode",false,true);
     pangolin::Var<bool> menuReset("menu.Reset",false,false);
 
     // Define Camera Render Object (for view / scene browsing)
@@ -92,6 +94,7 @@ void Viewer::Run()
 
     bool bFollow = true;
     bool bLocalizationMode = false;
+    bool bNoLoopClosing = false;
 
     while(1)
     {
@@ -123,6 +126,18 @@ void Viewer::Run()
         {
             mpSystem->DeactivateLocalizationMode();
             bLocalizationMode = false;
+        }
+
+
+        if(menuNoLoopClosing && !bNoLoopClosing)
+        {
+            mpSystem->DeactivateLoopClosure();
+            bNoLoopClosing = true;
+        }
+        else if(!menuNoLoopClosing && bNoLoopClosing)
+        {
+            mpSystem->ActivateLoopClosure();
+            bNoLoopClosing = false;
         }
 
         d_cam.Activate(s_cam);

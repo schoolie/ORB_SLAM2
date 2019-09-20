@@ -83,6 +83,13 @@ public:
     // This resumes local mapping thread and performs SLAM again.
     void DeactivateLocalizationMode();
 
+
+    // This resumes loop closure thread.
+    void ActivateLoopClosure();
+    // This stops loop closure thread.
+    void DeactivateLoopClosure();
+
+
     // Reset the system (clear map)
     void Reset();
 
@@ -161,6 +168,9 @@ private:
     std::mutex mMutexMode;
     bool mbActivateLocalizationMode;
     bool mbDeactivateLocalizationMode;
+
+    bool mbActivateLoopClosure;
+    bool mbDeactivateLoopClosure;
 };
 
 }// namespace ORB_SLAM
