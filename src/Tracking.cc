@@ -358,26 +358,29 @@ void Tracking::Track()
                     cv::Mat TcwMM;
                     if(!mVelocity.empty())
                     {
-                        bOKMM = TrackWithMotionModel();
+                        bOKMM = TrackWithMotionModel();  // this updates the pose estimate of the camera, based on previous velocity and the keypoints it can see
+                        
+                        // Store state for use later if Relocalization isn't successful
                         vpMPsMM = mCurrentFrame.mvpMapPoints;
                         vbOutMM = mCurrentFrame.mvbOutlier;
                         TcwMM = mCurrentFrame.mTcw.clone();
                     }
-                    bOKReloc = Relocalization();
+                    bOKReloc = Relocalization();   // This tries to relocalize based on the map data, now that the 
 
-                    if(bOKMM && !bOKReloc)
+                    if(bOKMM && !bOKReloc) // If motion model worked, but relocalization didn't, fall back to motion model/VO
                     {
+                        // Reset values stored from above
                         mCurrentFrame.SetPose(TcwMM);
                         mCurrentFrame.mvpMapPoints = vpMPsMM;
                         mCurrentFrame.mvbOutlier = vbOutMM;
 
-                        if(mbVO)
+                        if(mbVO) // This should always be True?? -- Nope, gets updated in call to TrackWithMotionModel();
                         {
                             for(int i =0; i<mCurrentFrame.N; i++)
                             {
                                 if(mCurrentFrame.mvpMapPoints[i] && !mCurrentFrame.mvbOutlier[i])
                                 {
-                                    mCurrentFrame.mvpMapPoints[i]->IncreaseFound();
+                                    mCurrentFrame.mvpMapPoints[i]->IncreaseFound();  // Increment the number of times the point has been "found." Not 100% what that means
                                 }
                             }
                         }
@@ -387,7 +390,7 @@ void Tracking::Track()
                         mbVO = false;
                     }
 
-                    bOK = bOKReloc || bOKMM;
+                    bOK = bOKReloc || bOKMM;  // Pass true if either Relocalization or VO was successful
                 }
             }
         }
@@ -920,8 +923,8 @@ bool Tracking::TrackWithMotionModel()
 
     if(mbOnlyTracking)
     {
-        mbVO = nmatchesMap<10;
-        return nmatches>20;
+        mbVO = nmatchesMap<10;  // Stays true if not enough points are found in the Map
+        return nmatches>20;     // Returns success if we found enough frame to frame matches (not using map history)
     }
 
     return nmatchesMap>=10;
