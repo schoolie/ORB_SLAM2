@@ -1505,24 +1505,24 @@ void Tracking::Reset()
 {
     mpViewer->RequestStop();
 
-    cout << "System Reseting" << endl;
+    // cout << "System Reseting" << endl;
     while(!mpViewer->isStopped())
         usleep(3000);
 
     // Reset Local Mapping
-    cout << "Reseting Local Mapper...";
+    // cout << "Reseting Local Mapper...";
     mpLocalMapper->RequestReset();
-    cout << " done" << endl;
+    // cout << " done" << endl;
 
     // Reset Loop Closing
-    cout << "Reseting Loop Closing...";
+    // cout << "Reseting Loop Closing...";
     mpLoopClosing->RequestReset();
-    cout << " done" << endl;
+    // cout << " done" << endl;
 
     // Clear BoW Database
-    cout << "Reseting Database...";
+    // cout << "Reseting Database...";
     mpKeyFrameDB->clear();
-    cout << " done" << endl;
+    // cout << " done" << endl;
 
     // Clear Map (this erase MapPoints and KeyFrames)
     mpMap->clear();
