@@ -43,7 +43,9 @@ using namespace std;
 namespace ORB_SLAM2
 {
 
-Tracking::Tracking(System *pSys, ORBVocabulary* pVoc, FrameDrawer *pFrameDrawer, MapDrawer *pMapDrawer, Map *pMap, KeyFrameDatabase* pKFDB, const string &strSettingPath, const int sensor):
+Tracking::Tracking(System *pSys, ORBVocabulary* pVoc, FrameDrawer *pFrameDrawer, 
+                   MapDrawer *pMapDrawer, Map *pMap, KeyFrameDatabase* pKFDB, 
+                   const string &strSettingPath, const string &framesFileName, const int sensor):
     mState(NO_IMAGES_YET), mSensor(sensor), mbOnlyTracking(false), mbVO(false), mpORBVocabulary(pVoc),
     mpKeyFrameDB(pKFDB), mpInitializer(static_cast<Initializer*>(NULL)), mpSystem(pSys),
     mpFrameDrawer(pFrameDrawer), mpMapDrawer(pMapDrawer), mpMap(pMap), mnLastRelocFrameId(0)
@@ -77,6 +79,11 @@ Tracking::Tracking(System *pSys, ORBVocabulary* pVoc, FrameDrawer *pFrameDrawer,
     DistCoef.copyTo(mDistCoef);
 
     mbf = fSettings["Camera.bf"];
+
+    // Open frame log file
+    char buffer[100];
+    sprintf(buffer, "%s_%d.txt", "/mnt/data/output/frames", mFramesFileNum);
+    mFramesFile.open(buffer);
 
     float fps = fSettings["Camera.fps"];
     if(fps==0)
@@ -487,6 +494,16 @@ void Tracking::Track()
         if(!mCurrentFrame.mpReferenceKF)
             mCurrentFrame.mpReferenceKF = mpReferenceKF;
 
+        // mFramesFile << mCurrentFrame.mTcw << endl;
+
+        cv::Mat Tcw = mCurrentFrame.mTcw; 
+        cv::Mat Rwc = Tcw.rowRange(0,3).colRange(0,3).t();
+        cv::Mat twc = -Rwc*Tcw.rowRange(0,3).col(3);
+
+        vector<float> q = Converter::toQuaternion(Rwc);
+
+        mFramesFile << setprecision(6) << mCurrentFrame.mTimeStamp << " " <<  setprecision(9) << twc.at<float>(0) << " " << twc.at<float>(1) << " " << twc.at<float>(2) << " " << q[0] << " " << q[1] << " " << q[2] << " " << q[3] << endl;
+        
         mLastFrame = Frame(mCurrentFrame);
     }
 
@@ -1535,6 +1552,15 @@ void Tracking::Reset()
     KeyFrame::nNextId = 0;
     Frame::nNextId = 0;
     mState = NO_IMAGES_YET;
+
+
+    // Close & Reopen frame log file
+    mFramesFile.close();
+    mFramesFileNum++;
+    char buffer[100];
+    sprintf(buffer, "%s_%d.txt", "/mnt/data/output/frames", mFramesFileNum);
+    mFramesFile.open(buffer);
+
 
     if(mpInitializer)
     {
