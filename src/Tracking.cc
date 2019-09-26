@@ -494,16 +494,32 @@ void Tracking::Track()
         if(!mCurrentFrame.mpReferenceKF)
             mCurrentFrame.mpReferenceKF = mpReferenceKF;
 
-        // mFramesFile << mCurrentFrame.mTcw << endl;
 
+        // Write current world coordinates to file
         cv::Mat Tcw = mCurrentFrame.mTcw; 
         cv::Mat Rwc = Tcw.rowRange(0,3).colRange(0,3).t();
         cv::Mat twc = -Rwc*Tcw.rowRange(0,3).col(3);
 
         vector<float> q = Converter::toQuaternion(Rwc);
 
-        mFramesFile << setprecision(6) << mCurrentFrame.mTimeStamp << " " <<  setprecision(9) << twc.at<float>(0) << " " << twc.at<float>(1) << " " << twc.at<float>(2) << " " << q[0] << " " << q[1] << " " << q[2] << " " << q[3] << endl;
+        mFramesFile << setprecision(6) << mCurrentFrame.mTimeStamp << " " <<  setprecision(9) << twc.at<float>(0) << " " << twc.at<float>(1) << " " << twc.at<float>(2) << " " << q[0] << " " << q[1] << " " << q[2] << " " << q[3];
         
+
+        // Write velocity to file (Transformation from last camera pose to current camera pose)
+        cv::Mat LastTwc = cv::Mat::eye(4,4,CV_32F);
+        cv::Mat T_cLast_c = cv::Mat::eye(4,4,CV_32F);
+
+        mLastFrame.GetRotationInverse().copyTo(LastTwc.rowRange(0,3).colRange(0,3));
+        mLastFrame.GetCameraCenter().copyTo(LastTwc.rowRange(0,3).col(3));
+        T_cLast_c = mCurrentFrame.mTcw*LastTwc;
+        cv::Mat R_cLast_c = T_cLast_c.rowRange(0,3).colRange(0,3).t();
+        cv::Mat t_cLast_c = -R_cLast_c*T_cLast_c.rowRange(0,3).col(3);
+        q = Converter::toQuaternion(R_cLast_c);
+
+        mFramesFile << " " <<  setprecision(9) << t_cLast_c.at<float>(0) << " " << t_cLast_c.at<float>(1) << " " << t_cLast_c.at<float>(2) << " " << q[0] << " " << q[1] << " " << q[2] << " " << q[3] << endl;
+
+
+        // Store last frame for next loop
         mLastFrame = Frame(mCurrentFrame);
     }
 

@@ -113,8 +113,8 @@ int main(int argc, char **argv)
           cout << SLAM.mpTracker->mLastProcessedState << " --> " << SLAM.mpTracker->mState << endl;
 
           if (SLAM.mpTracker->mState == 3) {
-            SLAM.SaveKeyFrameTrajectoryTUM("KeyFrameTrajectory_" + std::to_string(nTrackResets) + ".txt");
-            SLAM.SaveTrajectoryTUM("CameraTrajectory_" + std::to_string(nTrackResets) + ".txt");
+            SLAM.SaveKeyFrameTrajectoryTUM("/mnt/data/output/KeyFrameTrajectory_" + std::to_string(nTrackResets) + ".txt");
+            SLAM.SaveTrajectoryTUM("/mnt/data/output/CameraTrajectory_" + std::to_string(nTrackResets) + ".txt");
             SLAM.mpTracker->Reset();
             nTrackResets ++;
           }
@@ -183,8 +183,8 @@ int main(int argc, char **argv)
     cout << "mean tracking time: " << totaltime/nImages << endl;
 
     // Save camera trajectory
-    SLAM.SaveKeyFrameTrajectoryTUM("KeyFrameTrajectory_" + std::to_string(nTrackResets) + ".txt");
-    SLAM.SaveTrajectoryTUM("CameraTrajectory_" + std::to_string(nTrackResets) + ".txt");
+    SLAM.SaveKeyFrameTrajectoryTUM("/mnt/data/output/KeyFrameTrajectory_" + std::to_string(nTrackResets) + ".txt");
+    SLAM.SaveTrajectoryTUM("/mnt/data/output/CameraTrajectory_" + std::to_string(nTrackResets) + ".txt");
 
     return 0;
 }
