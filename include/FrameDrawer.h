@@ -49,7 +49,7 @@ public:
     cv::Mat DrawFrame();
 
     std::ofstream mPointsFile;
-
+    int mCurrentFrameNum;
 protected:
 
     void DrawTextInfo(cv::Mat &im, int nState, cv::Mat &imText);
