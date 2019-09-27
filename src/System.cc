@@ -206,13 +206,15 @@ cv::Mat System::TrackRGBD(const cv::Mat &im, const cv::Mat &depthmap, const doub
     return mpTracker->GrabImageRGBD(im,depthmap,timestamp);
 }
 
-cv::Mat System::TrackMonocular(const cv::Mat &im, const double &timestamp)
+cv::Mat System::TrackMonocular(const cv::Mat &im, int ni, const double &timestamp)
 {
     if(mSensor!=MONOCULAR)
     {
         cerr << "ERROR: you called TrackMonocular but input sensor was not set to Monocular." << endl;
         exit(-1);
     }
+
+    mFrameNum = ni;
 
     // Check mode change
     {
@@ -286,7 +288,7 @@ cv::Mat System::TrackMonocular(const cv::Mat &im, const double &timestamp)
     }
     }
 
-    return mpTracker->GrabImageMonocular(im,timestamp);
+    return mpTracker->GrabImageMonocular(im,mFrameNum,timestamp);
 }
 
 void System::ActivateLocalizationMode()
@@ -337,6 +339,7 @@ void System::Shutdown()
     mpLocalMapper->RequestFinish();
     mpLoopCloser->RequestFinish();
     mpViewer->RequestFinish();
+    mpFrameDrawer->mPointsFile.close();
 
     // Wait until all thread have effectively stopped
     while(!mpLocalMapper->isFinished() || !mpLoopCloser->isFinished()  ||

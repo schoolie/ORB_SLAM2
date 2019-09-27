@@ -48,6 +48,8 @@ public:
     // Draw last processed frame.
     cv::Mat DrawFrame();
 
+    std::ofstream mPointsFile;
+
 protected:
 
     void DrawTextInfo(cv::Mat &im, int nState, cv::Mat &imText);

@@ -22,7 +22,7 @@ Camera.p1: -0.0056429746713322375
 Camera.p2: -0.0035149772759666743
 Camera.k3: -0.07783212318543963
 # Camera frames per second
-Camera.fps: 2.0
+Camera.fps: 30.0
 
 # Color order of the images (0: BGR, 1: RGB. It is ignored if images are grayscale)
 Camera.RGB: 1
@@ -62,4 +62,4 @@ Viewer.ViewpointZ: -10
 Viewer.ViewpointF: 500
 Viewer.OutputImageReductionFactor: 1.2
 
-Mapper.StaleFrameLimit: 1.0
+Mapper.StaleFrameLimit: 10.0

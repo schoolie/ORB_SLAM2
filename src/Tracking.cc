@@ -242,7 +242,7 @@ cv::Mat Tracking::GrabImageRGBD(const cv::Mat &imRGB,const cv::Mat &imD, const d
 }
 
 
-cv::Mat Tracking::GrabImageMonocular(const cv::Mat &im, const double &timestamp)
+cv::Mat Tracking::GrabImageMonocular(const cv::Mat &im, int frameNum, const double &timestamp)
 {
     mImGray = im;
 
@@ -264,9 +264,9 @@ cv::Mat Tracking::GrabImageMonocular(const cv::Mat &im, const double &timestamp)
     mLatestTimeStamp = timestamp;
 
     if(mState==NOT_INITIALIZED || mState==NO_IMAGES_YET)
-        mCurrentFrame = Frame(mImGray,timestamp,mpIniORBextractor,mpORBVocabulary,mK,mDistCoef,mbf,mThDepth);
+        mCurrentFrame = Frame(mImGray,frameNum,timestamp,mpIniORBextractor,mpORBVocabulary,mK,mDistCoef,mbf,mThDepth);
     else
-        mCurrentFrame = Frame(mImGray,timestamp,mpORBextractorLeft,mpORBVocabulary,mK,mDistCoef,mbf,mThDepth);
+        mCurrentFrame = Frame(mImGray,frameNum,timestamp,mpORBextractorLeft,mpORBVocabulary,mK,mDistCoef,mbf,mThDepth);
 
     Track();
 
@@ -494,6 +494,9 @@ void Tracking::Track()
         if(!mCurrentFrame.mpReferenceKF)
             mCurrentFrame.mpReferenceKF = mpReferenceKF;
 
+        vector<cv::KeyPoint> vCurrentKeys;
+        vCurrentKeys=mCurrentFrame.mvKeys;
+
 
         // Write current world coordinates to file
         cv::Mat Tcw = mCurrentFrame.mTcw; 
@@ -504,6 +507,8 @@ void Tracking::Track()
 
         mFramesFile << setprecision(6) << mCurrentFrame.mTimeStamp << " " <<  setprecision(9) << twc.at<float>(0) << " " << twc.at<float>(1) << " " << twc.at<float>(2) << " " << q[0] << " " << q[1] << " " << q[2] << " " << q[3];
         
+
+
 
         // Write velocity to file (Transformation from last camera pose to current camera pose)
         cv::Mat LastTwc = cv::Mat::eye(4,4,CV_32F);

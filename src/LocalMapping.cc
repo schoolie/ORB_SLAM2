@@ -721,13 +721,13 @@ void LocalMapping::StaleKeyFrameCulling()
 
         double age = mpTracker->mLatestTimeStamp - pKF->mTimeStamp;
 
-        cout << "Stale Culling - Check KF " << pKF->mnId << " Timestamp: " << pKF->mTimeStamp << " Age: " << age;
+        // cout << "Stale Culling - Check KF " << pKF->mnId << " Timestamp: " << pKF->mTimeStamp << " Age: " << age;
 
         if(age > mStaleFrameLimit) {
             pKF->SetBadFlag();
-            cout << " - Culled";
+            // cout << " - Culled";
         }
-        cout << endl;
+        // cout << endl;
 
     }
 }

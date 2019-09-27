@@ -37,6 +37,11 @@ FrameDrawer::FrameDrawer(Map* pMap, const string &strSettingPath):mpMap(pMap)
     cv::FileStorage fSettings(strSettingPath, cv::FileStorage::READ);
     mOutputImageReductionFactor = fSettings["Viewer.OutputImageReductionFactor"];
 
+    char buffer[100];
+    sprintf(buffer, "%s.txt", "/mnt/data/output/point_data");
+    mPointsFile.open(buffer);
+
+
 }
 
 cv::Mat FrameDrawer::DrawFrame()
@@ -196,9 +201,18 @@ void FrameDrawer::Update(Tracking *pTracker)
             {
                 if(!pTracker->mCurrentFrame.mvbOutlier[i])
                 {
-                    if(pMP->Observations()>0)
+                    if(pMP->Observations()>0) {
                         mvbMap[i]=true;
-                    else
+
+
+                        cv::Mat mpPos = pMP->GetWorldPos();
+
+                        mPointsFile << setprecision(6) << pTracker->mCurrentFrame.mnId << " " << pTracker->mCurrentFrame.mFrameNum << " " << i << " " << pMP->mnId << " " << mvCurrentKeys[i].pt.x << " " << mvCurrentKeys[i].pt.y;
+                        mPointsFile << " " << mpPos.at<float>(0) << " " << mpPos.at<float>(1) << " " << mpPos.at<float>(2) << endl;
+
+                        
+
+                    } else
                         mvbVO[i]=true;
                 }
             }
