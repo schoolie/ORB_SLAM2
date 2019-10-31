@@ -29,7 +29,7 @@
 namespace ORB_SLAM2
 {
 
-FrameDrawer::FrameDrawer(Map* pMap, const string &strSettingPath):mpMap(pMap)
+FrameDrawer::FrameDrawer(Map* pMap, const string &strSettingPath, const string &outputPath):mpMap(pMap)
 {
     mState=Tracking::SYSTEM_NOT_READY;
     mIm = cv::Mat(480,640,CV_8UC3, cv::Scalar(0,0,0));
@@ -37,8 +37,9 @@ FrameDrawer::FrameDrawer(Map* pMap, const string &strSettingPath):mpMap(pMap)
     cv::FileStorage fSettings(strSettingPath, cv::FileStorage::READ);
     mOutputImageReductionFactor = fSettings["Viewer.OutputImageReductionFactor"];
 
+    // Open points log file
     char buffer[100];
-    sprintf(buffer, "%s.txt", "/mnt/data/output/point_data");
+    sprintf(buffer, "%s/point_data.txt", outputPath.c_str());
     mPointsFile.open(buffer);
 
 

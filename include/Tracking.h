@@ -122,7 +122,7 @@ public:
     string mOutputPath;
     string mFramesPath;
     std::ofstream mFramesFile;
-    int mFramesFileNum = 0;
+    int mFramesSequenceNum = 0;
 
 protected:
 

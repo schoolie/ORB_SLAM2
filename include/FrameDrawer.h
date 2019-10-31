@@ -40,7 +40,7 @@ class Viewer;
 class FrameDrawer
 {
 public:
-    FrameDrawer(Map* pMap, const string &strSettingPath);
+    FrameDrawer(Map* pMap, const string &strSettingPath, const string &outputPath);
 
     // Update info from the last processed frame.
     void Update(Tracking *pTracker);

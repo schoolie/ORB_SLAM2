@@ -144,7 +144,7 @@ int main(int argc, char **argv)
 
         // Pass the image to the SLAM system
 
-        mTcw = SLAM.TrackMonocular(im,ni,tframe);
+        mTcw = SLAM.TrackMonocular(im,nframe,tframe);
 
 
 

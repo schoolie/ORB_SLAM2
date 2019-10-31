@@ -82,7 +82,8 @@ Tracking::Tracking(System *pSys, ORBVocabulary* pVoc, FrameDrawer *pFrameDrawer,
 
     // Open frame log file
     char buffer[100];
-    sprintf(buffer, "%s/frames_%d.txt", outputPath.c_str(), mFramesFileNum);
+    // sprintf(buffer, "%s/frames_%d.txt", outputPath.c_str(), mFramesSequenceNum);
+    sprintf(buffer, "%s/frames.txt", outputPath.c_str());
     mFramesFile.open(buffer);
 
     float fps = fSettings["Camera.fps"];
@@ -505,7 +506,7 @@ void Tracking::Track()
 
         vector<float> q = Converter::toQuaternion(Rwc);
 
-        mFramesFile << setprecision(6) << mCurrentFrame.mTimeStamp << " " <<  setprecision(9) << twc.at<float>(0) << " " << twc.at<float>(1) << " " << twc.at<float>(2) << " " << q[0] << " " << q[1] << " " << q[2] << " " << q[3];
+        mFramesFile << setprecision(6) << mCurrentFrame.mTimeStamp << " " << mCurrentFrame.mFrameNum << " " <<  setprecision(9) << twc.at<float>(0) << " " << twc.at<float>(1) << " " << twc.at<float>(2) << " " << q[0] << " " << q[1] << " " << q[2] << " " << q[3];
         
 
 
@@ -1573,15 +1574,6 @@ void Tracking::Reset()
     KeyFrame::nNextId = 0;
     Frame::nNextId = 0;
     mState = NO_IMAGES_YET;
-
-
-    // Close & Reopen frame log file
-    mFramesFile.close();
-    mFramesFileNum++;
-    char buffer[100];
-    sprintf(buffer, "%s_%d.txt", "/mnt/data/output/frames", mFramesFileNum);
-    mFramesFile.open(buffer);
-
 
     if(mpInitializer)
     {

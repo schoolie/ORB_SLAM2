@@ -82,7 +82,7 @@ System::System(const string &strVocFile, const string &strSettingsFile, const eS
     mpMap = new Map();
 
     //Create Drawers. These are used by the Viewer
-    mpFrameDrawer = new FrameDrawer(mpMap, strSettingsFile);
+    mpFrameDrawer = new FrameDrawer(mpMap, strSettingsFile, outputPath);
     mpMapDrawer = new MapDrawer(mpMap, strSettingsFile);
 
     //Initialize the Tracking thread
@@ -339,6 +339,9 @@ void System::Shutdown()
     mpLocalMapper->RequestFinish();
     mpLoopCloser->RequestFinish();
     mpViewer->RequestFinish();
+
+    // Close frame and points log file
+    mpTracker->mFramesFile.close();
     mpFrameDrawer->mPointsFile.close();
 
     // Wait until all thread have effectively stopped
