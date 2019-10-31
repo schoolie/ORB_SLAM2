@@ -45,7 +45,7 @@ namespace ORB_SLAM2
 
 Tracking::Tracking(System *pSys, ORBVocabulary* pVoc, FrameDrawer *pFrameDrawer, 
                    MapDrawer *pMapDrawer, Map *pMap, KeyFrameDatabase* pKFDB, 
-                   const string &strSettingPath, const string &framesFileName, const int sensor):
+                   const string &strSettingPath, const string &outputPath, const int sensor):
     mState(NO_IMAGES_YET), mSensor(sensor), mbOnlyTracking(false), mbVO(false), mpORBVocabulary(pVoc),
     mpKeyFrameDB(pKFDB), mpInitializer(static_cast<Initializer*>(NULL)), mpSystem(pSys),
     mpFrameDrawer(pFrameDrawer), mpMapDrawer(pMapDrawer), mpMap(pMap), mnLastRelocFrameId(0)
@@ -82,7 +82,7 @@ Tracking::Tracking(System *pSys, ORBVocabulary* pVoc, FrameDrawer *pFrameDrawer,
 
     // Open frame log file
     char buffer[100];
-    sprintf(buffer, "%s_%d.txt", "/mnt/data/output/frames", mFramesFileNum);
+    sprintf(buffer, "%s/frames_%d.txt", outputPath.c_str(), mFramesFileNum);
     mFramesFile.open(buffer);
 
     float fps = fSettings["Camera.fps"];

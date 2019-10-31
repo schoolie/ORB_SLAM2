@@ -25,6 +25,8 @@
 #include<chrono>
 #include<iomanip>
 #include<cstdlib>
+#include <stdio.h>
+#include <sys/stat.h>
 
 #include<opencv2/core/core.hpp>
 
@@ -34,8 +36,7 @@
 //#include"../../include/Osmap.h"   /// for saving the map
 
 /// run with:
-// ./Examples/Monocular/mono_black_fly Vocabulary/ORBvoc.txt Examples/Monocular/black_fly.yaml /mnt/data/input/black_fly_data_mirrored/
-// ./Examples/Monocular/mono_black_fly Vocabulary/ORBvoc.txt Examples/Monocular/black_fly_downsized.yaml /mnt/data/input/black_fly_data_downsized/
+// ./Examples/Monocular/validate_black_fly Vocabulary/ORBvoc.txt Examples/Monocular/black_fly_downsized.yaml /mnt/data/input/validation_data/test_flight_run_1_blackflys_1_0/
 
 using namespace cv;
 using namespace std;
@@ -55,9 +56,13 @@ int main(int argc, char **argv)
     vector<int> vFrameNums;
     vector<string> vstrImageFilenames;
     vector<double> vTimestamps;
-    LoadImages(string(argv[3]), vFrameNums, vstrImageFilenames, vTimestamps);
 
+    string dataPath = string(argv[3]);
+    LoadImages(dataPath, vFrameNums, vstrImageFilenames, vTimestamps);
 
+    string outputPath = dataPath;
+    outputPath.append("/output");
+    mkdir(outputPath.c_str(), 0777);
 
     int nTrackResets = 0;
     int nImages = vstrImageFilenames.size();
@@ -82,11 +87,10 @@ int main(int argc, char **argv)
       nStep = atoi(argv[6]);
     }
 
-    string framesFileName = "frames.txt";
 
 
     // Create SLAM system. It initializes all system threads and gets ready to process frames.
-    ORB_SLAM2::System SLAM(argv[1],argv[2],ORB_SLAM2::System::MONOCULAR,framesFileName,true);
+    ORB_SLAM2::System SLAM(argv[1],argv[2],ORB_SLAM2::System::MONOCULAR,outputPath,true);
 
     // Vector for tracking time statistics
     vector<float> vTimesTrack;
@@ -108,12 +112,16 @@ int main(int argc, char **argv)
         // Read image from file
         im = cv::imread(vstrImageFilenames[ni],CV_LOAD_IMAGE_UNCHANGED);
         double tframe = vTimestamps[ni];
+        int nframe = vFrameNums[ni];
 
         if (SLAM.mpTracker->mState != SLAM.mpTracker->mLastProcessedState) {
           cout << "Processing Image: " << ni << " ("<<vstrImageFilenames[ni] << ") @ time " << tframe << endl;
           cout << SLAM.mpTracker->mLastProcessedState << " --> " << SLAM.mpTracker->mState << endl;
 
           if (SLAM.mpTracker->mState == 3) {
+            
+            string outputPath = dataPath;
+            outputPath.append("/output");
             SLAM.SaveKeyFrameTrajectoryTUM("/mnt/data/output/KeyFrameTrajectory_" + std::to_string(nTrackResets) + ".txt");
             SLAM.SaveTrajectoryTUM("/mnt/data/output/CameraTrajectory_" + std::to_string(nTrackResets) + ".txt");
             SLAM.mpTracker->Reset();
@@ -218,7 +226,7 @@ void LoadImages(const string &strPathToSequence, vector<int> &vFrameNums, vector
             // save filename
             stringstream ss;
             ss << split_line[1];
-            vstrImageFilenames.push_back(strPrefixLeft + ss.str());
+            vstrImageFilenames.push_back(strPrefixLeft + "/" + ss.str());
 
             // save frame time
             double t;

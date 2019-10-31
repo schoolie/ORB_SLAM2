@@ -55,7 +55,7 @@ class Tracking
 
 public:
     Tracking(System* pSys, ORBVocabulary* pVoc, FrameDrawer* pFrameDrawer, MapDrawer* pMapDrawer, Map* pMap,
-             KeyFrameDatabase* pKFDB, const string &strSettingPath, const string &framesFileName, const int sensor);
+             KeyFrameDatabase* pKFDB, const string &strSettingPath, const string &outputPath, const int sensor);
 
     // Preprocess the input and call Track(). Extract features and performs stereo matching.
     cv::Mat GrabImageStereo(const cv::Mat &imRectLeft,const cv::Mat &imRectRight, const double &timestamp);
@@ -119,7 +119,8 @@ public:
 
     void Reset();
 
-    string mFramesFileName;
+    string mOutputPath;
+    string mFramesPath;
     std::ofstream mFramesFile;
     int mFramesFileNum = 0;
 

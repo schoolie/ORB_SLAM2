@@ -64,7 +64,7 @@ void LoopClosing::Run()
         // Check if there are keyframes in the queue
         if(CheckNewKeyFrames() && !Stop())
         {
-            cout << "Loop Closing New Keyframes " << mlpLoopKeyFrameQueue.size() << endl;
+            // cout << "Loop Closing New Keyframes " << mlpLoopKeyFrameQueue.size() << endl;
 
             // Detect loop candidates and check covisibility consistency
             if(DetectLoop())
