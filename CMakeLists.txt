@@ -102,3 +102,7 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/Examples/Monocular)
 add_executable(mono_black_fly
 Examples/Monocular/mono_black_fly.cc)
 target_link_libraries(mono_black_fly ${PROJECT_NAME})
+
+add_executable(validate_black_fly
+Examples/Monocular/validate_black_fly.cc)
+target_link_libraries(validate_black_fly ${PROJECT_NAME})
