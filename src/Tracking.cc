@@ -506,11 +506,8 @@ void Tracking::Track()
 
         vector<float> q = Converter::toQuaternion(Rwc);
 
-        mFramesFile << setprecision(6) << mCurrentFrame.mTimeStamp << " " << mCurrentFrame.mFrameNum << " " <<  setprecision(9) << twc.at<float>(0) << " " << twc.at<float>(1) << " " << twc.at<float>(2) << " " << q[0] << " " << q[1] << " " << q[2] << " " << q[3];
-        
-
-
-
+        mFramesFile << " " << mFramesSequenceNum << " " << setprecision(6) << mCurrentFrame.mTimeStamp << " " << mCurrentFrame.mFrameNum << " " <<  setprecision(9) << twc.at<float>(0) << " " << twc.at<float>(1) << " " << twc.at<float>(2) << " " << q[0] << " " << q[1] << " " << q[2] << " " << q[3];
+                
         // Write velocity to file (Transformation from last camera pose to current camera pose)
         cv::Mat LastTwc = cv::Mat::eye(4,4,CV_32F);
         cv::Mat T_cLast_c = cv::Mat::eye(4,4,CV_32F);
@@ -1585,6 +1582,9 @@ void Tracking::Reset()
     mlpReferences.clear();
     mlFrameTimes.clear();
     mlbLost.clear();
+
+    // Increment sequence number
+    mFramesSequenceNum++;
 
     mpViewer->Release();
 }
