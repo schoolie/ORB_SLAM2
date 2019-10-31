@@ -40,7 +40,7 @@
 using namespace cv;
 using namespace std;
 
-void LoadImages(const string &strSequence, vector<string> &vstrImageFilenames,
+void LoadImages(const string &strSequence, vector<int> &vFrameNums, vector<string> &vstrImageFilenames,
                 vector<double> &vTimestamps);
 
 int main(int argc, char **argv)
@@ -52,9 +52,10 @@ int main(int argc, char **argv)
     }
 
     // Retrieve paths to images
+    vector<int> vFrameNums;
     vector<string> vstrImageFilenames;
     vector<double> vTimestamps;
-    LoadImages(string(argv[3]), vstrImageFilenames, vTimestamps);
+    LoadImages(string(argv[3]), vFrameNums, vstrImageFilenames, vTimestamps);
 
 
 
@@ -189,34 +190,52 @@ int main(int argc, char **argv)
     return 0;
 }
 
-void LoadImages(const string &strPathToSequence, vector<string> &vstrImageFilenames, vector<double> &vTimestamps)
+void LoadImages(const string &strPathToSequence, vector<int> &vFrameNums, vector<string> &vstrImageFilenames, vector<double> &vTimestamps)
 {
     ifstream fTimes;
-    string strPathTimeFile = strPathToSequence + "/times.txt";
+    string strPathTimeFile = strPathToSequence + "/frame_info.txt";
     fTimes.open(strPathTimeFile.c_str());
+
+    string strPrefixLeft = strPathToSequence;
+
     while(!fTimes.eof())
     {
         string s;
         getline(fTimes,s);
         if(!s.empty())
         {
+            istringstream iss(s);
+
+            vector<string> split_line((istream_iterator<string>(iss)),
+                                 istream_iterator<string>());
+
+
+            // save frame number
+            int n;
+            n = atoi(split_line[0].c_str());
+            vFrameNums.push_back(n);
+
+            // save filename
             stringstream ss;
-            ss << s;
+            ss << split_line[1];
+            vstrImageFilenames.push_back(strPrefixLeft + ss.str());
+
+            // save frame time
             double t;
-            ss >> t;
+            t = atof(split_line[2].c_str());
             vTimestamps.push_back(t);
         }
     }
 
-    string strPrefixLeft = strPathToSequence + "/images_slam/frame_";
+    // string strPrefixLeft = strPathToSequence + "/images_slam/frame_";
 
-    const int nTimes = vTimestamps.size();
-    vstrImageFilenames.resize(nTimes);
+    // const int nTimes = vTimestamps.size();
+    // vstrImageFilenames.resize(nTimes);
 
-    for(int i=0; i<nTimes; i++)
-    {
-        stringstream ss;
-        ss << setfill('0') << setw(5) << i;
-        vstrImageFilenames[i] = strPrefixLeft + ss.str() + ".jpg";
-    }
+    // for(int i=0; i<nTimes; i++)
+    // {
+    //     stringstream ss;
+    //     ss << setfill('0') << setw(5) << i;
+    //     vstrImageFilenames[i] = strPrefixLeft + ss.str() + ".jpg";
+    // }
 }
