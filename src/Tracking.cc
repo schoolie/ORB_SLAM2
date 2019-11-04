@@ -85,6 +85,8 @@ Tracking::Tracking(System *pSys, ORBVocabulary* pVoc, FrameDrawer *pFrameDrawer,
     // sprintf(buffer, "%s/frames_%d.txt", outputPath.c_str(), mFramesSequenceNum);
     sprintf(buffer, "%s/frames.txt", outputPath.c_str());
     mFramesFile.open(buffer);
+    mFramesFile << "sequence_num " << "time_s " << "frameNum " << "POS_X " << "POS_Y " << "POS_Z " << "Q_W " << "Q_X " << "Q_Y " << "Q_Z ";
+    mFramesFile << "dPOS_X " << "dPOS_Y " << "dPOS_Z " << "dQ_W " << "dQ_X " << "dQ_Y " << "dQ_Z" << endl;
 
     float fps = fSettings["Camera.fps"];
     if(fps==0)
@@ -506,7 +508,7 @@ void Tracking::Track()
 
         vector<float> q = Converter::toQuaternion(Rwc);
 
-        mFramesFile << " " << mFramesSequenceNum << " " << setprecision(6) << mCurrentFrame.mTimeStamp << " " << mCurrentFrame.mFrameNum << " " <<  setprecision(9) << twc.at<float>(0) << " " << twc.at<float>(1) << " " << twc.at<float>(2) << " " << q[0] << " " << q[1] << " " << q[2] << " " << q[3];
+        mFramesFile << mFramesSequenceNum << " " << setprecision(6) << mCurrentFrame.mTimeStamp << " " << mCurrentFrame.mFrameNum << " " <<  setprecision(9) << twc.at<float>(0) << " " << twc.at<float>(1) << " " << twc.at<float>(2) << " " << q[0] << " " << q[1] << " " << q[2] << " " << q[3];
                 
         // Write velocity to file (Transformation from last camera pose to current camera pose)
         cv::Mat LastTwc = cv::Mat::eye(4,4,CV_32F);

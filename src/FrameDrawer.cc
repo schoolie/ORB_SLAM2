@@ -41,6 +41,7 @@ FrameDrawer::FrameDrawer(Map* pMap, const string &strSettingPath, const string &
     char buffer[100];
     sprintf(buffer, "%s/point_data.txt", outputPath.c_str());
     mPointsFile.open(buffer);
+    mPointsFile << "frameID " << "frameNum " << "KPID " << "MPID " << "imX " << "imY " << "POS_X " << "POS_Y " << "POS_Z" << endl;
 
 
 }
