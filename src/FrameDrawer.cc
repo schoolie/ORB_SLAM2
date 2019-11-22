@@ -38,7 +38,7 @@ FrameDrawer::FrameDrawer(Map* pMap, const string &strSettingPath, const string &
     mOutputImageReductionFactor = fSettings["Viewer.OutputImageReductionFactor"];
 
     // Open points log file
-    char buffer[100];
+    char buffer[200];
     sprintf(buffer, "%s/point_data.txt", outputPath.c_str());
     mPointsFile.open(buffer);
     mPointsFile << "frameID " << "frameNum " << "KPID " << "MPID " << "imX " << "imY " << "POS_X " << "POS_Y " << "POS_Z" << endl;

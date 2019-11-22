@@ -81,7 +81,7 @@ Tracking::Tracking(System *pSys, ORBVocabulary* pVoc, FrameDrawer *pFrameDrawer,
     mbf = fSettings["Camera.bf"];
 
     // Open frame log file
-    char buffer[100];
+    char buffer[200];
     // sprintf(buffer, "%s/frames_%d.txt", outputPath.c_str(), mFramesSequenceNum);
     sprintf(buffer, "%s/frames.txt", outputPath.c_str());
     mFramesFile.open(buffer);
